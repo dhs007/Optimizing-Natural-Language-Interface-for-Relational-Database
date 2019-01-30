@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 
 const environment = process.env.NODE_ENV; // development
 const stage = require('./config')[environment];
+const cors = require('cors')
 
 const connection = require('./backend/db/connect');
 //const path = require('path');
@@ -19,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
  
 // parse application/json
 app.use(bodyParser.json())
-
+app.use(cors())
 if (environment !== 'production') {
   app.use(logger('dev'));
 }
