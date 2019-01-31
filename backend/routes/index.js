@@ -10,5 +10,6 @@ router.get('/login', (req,res) => {
 });
 router.post('/signup',userController.create);
 router.post('/login',userController.login);
+router.get('/verify',userController.verify);
 router.get('/test',middleware.checkToken,userController.test);
 module.exports = router;

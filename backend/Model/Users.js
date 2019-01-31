@@ -52,6 +52,20 @@ let checkEmailExits = (email) => {
   })
 }
 
+let verifyEmail = (email) => {
+  return new Promise((resolve,reject) => {
+    console.log(email)
+    let query = 'Update users SET status = 1 WHERE email ='+ mysql.escape(email);
+    db.connection.query(query,(error, rows,fields) => {
+      if (error) {
+        reject(false);
+      } else {
+        resolve(true);
+      }
+    })
+  })
+}
+
 function authenticate(email,password) {
   return new Promise ((resolve,reject) => {
     let query = 'Select userId,name,email,status,password from users WHERE email ='+ mysql.escape(email);
@@ -87,5 +101,6 @@ function authenticate(email,password) {
 module.exports = {
   createUser,
   authenticate,
-  checkEmailExits
+  checkEmailExits,
+  verifyEmail
 };

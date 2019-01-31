@@ -1,5 +1,6 @@
 const model = require('../Model/Users');
 const jwt    = require('jsonwebtoken');
+var nodemailer = require('nodemailer');
 
 let create = (req,res) => {
   let output = {};
@@ -11,6 +12,38 @@ let create = (req,res) => {
       .then((response) => {
         console.log(response)
         if(response.status) {
+
+          var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                   user: process.env.email,
+                   pass: process.env.password
+               }
+           });
+
+           const payload = {
+            name: name,
+            email: email,
+          };
+          let token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn : 60*60*24
+          });
+           let link="http://"+req.get('host')+"/api/v1/verify?id="+token;
+           
+           const mailOptions = {
+            from: 'priyank22259@gmail.com', // sender address
+            to: 'priyanktyagi_di@srmuniv.edu.in', // list of receivers
+            subject: 'Email Verification', // Subject line
+            html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>" 
+          };
+
+          transporter.sendMail(mailOptions, function (err, info) {
+            if(err)
+              console.log(err)
+            else
+              console.log(info);
+         });
+
           output.status = 'success';
           res.status(200).send(output);
         } else {
@@ -74,6 +107,30 @@ function login(req,res) {
     })
 }
 
+let verify = (req,res) => {
+  var token = req.query.id;
+  if(token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        console.log(err)
+      } else {
+        let email = decoded.email
+        model.verifyEmail(email)
+          .then((response) => {
+            if(response) {
+              res.send('Email Verified')
+            } else {
+              res.send('Error')
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        //res.send(email)
+      }
+    })
+  }
+}
 
 let test = (req,res)=> {
   let output = {};
@@ -85,5 +142,6 @@ let test = (req,res)=> {
 module.exports = {
   create,
   login,
-  test
+  test,
+  verify
 };
