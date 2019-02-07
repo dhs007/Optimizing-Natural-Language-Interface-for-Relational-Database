@@ -11,6 +11,7 @@ let create = (req,res) => {
     model.createUser(name,email,password)
       .then((response) => {
         console.log(response)
+        console.log('Email sending')
         if(response.status) {
 
           var transporter = nodemailer.createTransport({
@@ -25,14 +26,15 @@ let create = (req,res) => {
             name: name,
             email: email,
           };
-          let token = jwt.sign(payload, process.env.JWT_SECRET, {
+          let token = jwt.sign(payload, process.env.JWT_SECRET_FOR_EMAIL, {
             expiresIn : 60*60*24
           });
-           let link="http://"+req.get('host')+"/api/v1/verify?id="+token;
+          let link="http://"+req.get('host')+"/#/auth/email/verify?id="+token;
+          //let link = "http://localhost:8080/#/auth/email/verify?id="+token
            
            const mailOptions = {
-            from: 'priyank22259@gmail.com', // sender address
-            to: 'priyanktyagi_di@srmuniv.edu.in', // list of receivers
+            from: process.env.email, // sender address
+            to: email, // list of receivers
             subject: 'Email Verification', // Subject line
             html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>" 
           };
@@ -67,8 +69,6 @@ let create = (req,res) => {
 function login(req,res) {
   //let output = {};
   console.log('In controller');
-  // if(model.authenticate(req.body.email && req.body.password))
-  //   res.status(200).send('yes');
   model.authenticate(req.body.email,req.body.password)
     .then((response) => {
       console.log(response);
@@ -108,9 +108,9 @@ function login(req,res) {
 }
 
 let verify = (req,res) => {
-  var token = req.query.id;
+  var token = req.body.token;
   if(token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET_FOR_EMAIL, (err, decoded) => {
       if (err) {
         console.log(err)
       } else {
@@ -132,6 +132,13 @@ let verify = (req,res) => {
   }
 }
 
+let checkToken = (req,res) => {
+  let output = {};
+  output.success = true;
+  output.message = 'Token is Valid';
+  res.status(200).json(output);
+}
+
 let test = (req,res)=> {
   let output = {};
   output.data = req.decoded;
@@ -143,5 +150,6 @@ module.exports = {
   create,
   login,
   test,
-  verify
+  verify,
+  checkToken
 };

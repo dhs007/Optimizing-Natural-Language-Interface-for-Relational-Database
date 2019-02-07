@@ -67,26 +67,32 @@ let verifyEmail = (email) => {
 }
 
 function authenticate(email,password) {
+  console.log(password)
   return new Promise ((resolve,reject) => {
     let query = 'Select userId,name,email,status,password from users WHERE email ='+ mysql.escape(email);
     db.connection.query(query,(error, rows,fields) => {
       if (error) {
         reject(error);
       } else {
-        bcrypt.compare(password,rows[0].password,(err, res) => {
-          if(err) {
-            console.log('err');
-            let test = [];
-            resolve(test);
-          }
-          else if(res) {
-            console.log('res');
-            resolve(rows);
-          } else {
-            console.log('else');
-            resolve([]);
-          }
-        })
+        if(rows.length > 0) {
+          bcrypt.compare(password,rows[0].password,(err, res) => {
+            if(err) {
+              console.log('err');
+              let test = [];
+              resolve(test);
+            }
+            else if(res) {
+              console.log('res');
+              resolve(rows);
+            } else {
+              console.log('else');
+              resolve([]);
+            }
+          })
+        } else {
+          let test = [];
+          resolve(test);
+        }
       }
 
     })

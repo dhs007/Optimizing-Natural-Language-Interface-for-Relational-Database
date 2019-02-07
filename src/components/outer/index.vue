@@ -7,6 +7,12 @@
 </template>
 <script>
 export default {
-  name: 'outer'
+  name: 'outer',
+  created () {
+    let token = window.localStorage.getItem('token')
+    if(token) {
+      this.$router.push('/app/home')
+    }
+  }
 }
 </script>

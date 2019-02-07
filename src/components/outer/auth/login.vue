@@ -25,6 +25,9 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
+                <v-layout justify-end @click="redirSignup">
+                  <v-btn flat small color="primary">New User Login Now</v-btn>
+                </v-layout>
               </v-container>
             </v-form>
           </div>
@@ -60,6 +63,9 @@ export default {
     }
   },
   methods: {
+    redirSignup () {
+      this.$router.push('/signup')
+    },
     login () {
       this.loading = true
       let obj = {

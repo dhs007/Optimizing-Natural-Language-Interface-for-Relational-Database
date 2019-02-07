@@ -13,7 +13,27 @@ export default {
   created () {
     if(window.localStorage.getItem('token')) {
       let token = window.localStorage.getItem('token')
-      console.log('Token is present')
+      var config = {
+          headers: {'Authorization': "Bearer " + token}
+      };
+      axios.get(this.$store.getters.getBaseUrl+'/tokenCheck', config)
+      .then((res) => {
+        if(res.data.success == false) {
+          localStorage.removeItem('token')
+          console.log('Wrong Token')
+              this.$store.commit('createSnackbar', {
+            color: 'red',
+            content: 'Session Expired Login Again'
+          })
+          this.$router.push({path: '/auth/login'})
+        } else {
+          console.log('Token verified')
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      //console.log('Token is present')
     }
     else {
       console.log('Token not present')

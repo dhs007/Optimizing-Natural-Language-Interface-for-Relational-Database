@@ -18,7 +18,7 @@ export default {
     var config = {
         headers: {'Authorization': "Bearer " + token}
     };
-    console.log(token)
+    //console.log(token)
     axios.get(this.$store.getters.getBaseUrl+'/test', config)
       .then((res) => {
         console.log(res.data)

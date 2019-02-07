@@ -9,6 +9,7 @@ import Home from './components/inner/home/index.vue'
 import Outer from './components/outer'
 import Login from './components/outer/auth/login.vue'
 import Signup from './components/outer/auth/signup.vue'
+import EmailVerify from './components/outer/auth/emailverify'
 
 Vue.use(Router)
 
@@ -42,6 +43,7 @@ export default new Router({
       children: [
         {path: '/auth',redirect: '/auth/login'},
         {path: '/auth/login', component: Login},
+        {path: '/auth/email/verify', component: EmailVerify},
         {path: '/signup', component: Signup}
       ]
     },
