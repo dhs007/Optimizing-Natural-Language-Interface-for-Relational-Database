@@ -4,7 +4,7 @@
       <v-flex xs12 sm6>
         <v-card class="pa-4">
           <v-card-title primary-title class="headline mb-0">
-            Login
+            Forget Password
           </v-card-title>
           <div>
             <v-form v-model="valid">
@@ -17,18 +17,11 @@
                       label="Email"
                     ></v-text-field>
                   </v-flex>
-                  <v-flex md10 offset-md1>
-                    <v-text-field
-                      :rules="[rules.required, rules.min]"
-                      v-model="password"
-                      label="Password"
-                    ></v-text-field>
-                  </v-flex>
                 </v-layout>
                 <v-layout row wrap>
                   <v-flex md6>
-                     <v-layout justify-start @click="redirForgetPass">
-                        <v-btn flat small color="primary">Forgot Password</v-btn>
+                     <v-layout justify-start @click="redirLogin">
+                        <v-btn flat small color="primary">Go back to login</v-btn>
                       </v-layout>
                   </v-flex>
                   <v-flex md6>
@@ -42,7 +35,7 @@
           </div>
           <v-card-actions>
             <v-layout justify-center>
-              <v-btn :disabled="!valid" @click="login" :loading="loading" color="orange">Login</v-btn>
+              <v-btn :disabled="!valid" @click="forgetPassFunc" :loading="loading" color="orange">Submit</v-btn>
             </v-layout>
           </v-card-actions>
         </v-card>
@@ -54,62 +47,43 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'login',
+  name: 'ForgetPassword',
   data () {
     return {
       email: '',
-      password: '',
       loading: false,
       valid: true,
       emailRules: [
         v => !!v || 'E-mail is required',
         v => /.+@.+/.test(v) || 'E-mail must be valid'
-      ],
-      rules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 8 || 'Min 8 characters'
-      }
+      ]
     }
   },
   methods: {
     redirSignup () {
       this.$router.push('/signup')
     },
-    redirForgetPass () {
-      this.$router.push('/auth/ForgetPassword')
+    redirLogin () {
+      this.$router.push('/auth/login')
     },
-    login () {
+    forgetPassFunc () {
       this.loading = true
       let obj = {
         email: this.email,
-        password: this.password
       }
       console.log(obj)
-      axios.post(this.$store.getters.getBaseUrl+'/login', obj)
+      axios.post(this.$store.getters.getBaseUrl+'/forgetPassword', obj)
         .then((res) => {
+          console.log(res.data)
           if(res.data.success) {
-            if(res.data.token) {
-              console.log(res.data.token)
-              this.$store.commit('createSnackbar', {
-                color: 'green',
-                content: 'Login Successfull'
-              })
-              localStorage.setItem('token', res.data.token)
-              this.$router.push({path: '/app/home'})
-            } else {
-              this.$store.commit('createSnackbar', {
-                color: 'red',
-                content: 'Try Again'
-              })
-              this.loading = false
-            }
+
           } else {
             this.$store.commit('createSnackbar', {
-                color: 'red',
-                content: res.data.message
-              })
-              this.loading = false
+              color: 'red',
+              content: res.data.message
+            })
           }
+          this.loading = false
         })
         .catch(() => {
           this.$store.commit('createSnackbar', {

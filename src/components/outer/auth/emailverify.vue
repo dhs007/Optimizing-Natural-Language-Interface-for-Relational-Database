@@ -17,6 +17,8 @@ export default {
       }
     axios.post(this.$store.getters.getBaseUrl+'/verify', obj)
       .then((res)=> {
+        console.log('Printing Data');
+        console.log(res.data)
         if(res.data == "Email Verified") {
           this.$store.commit('createSnackbar', {
                 color: 'green',

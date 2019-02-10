@@ -4,19 +4,12 @@
       <v-flex xs12 sm6>
         <v-card class="pa-4">
           <v-card-title primary-title class="headline mb-0">
-            Login
+            Set New Password
           </v-card-title>
           <div>
             <v-form v-model="valid">
               <v-container fluid>
                 <v-layout row wrap>
-                  <v-flex md10 offset-md1>
-                    <v-text-field
-                      v-model="email"
-                      :rules="emailRules"
-                      label="Email"
-                    ></v-text-field>
-                  </v-flex>
                   <v-flex md10 offset-md1>
                     <v-text-field
                       :rules="[rules.required, rules.min]"
@@ -27,8 +20,8 @@
                 </v-layout>
                 <v-layout row wrap>
                   <v-flex md6>
-                     <v-layout justify-start @click="redirForgetPass">
-                        <v-btn flat small color="primary">Forgot Password</v-btn>
+                     <v-layout justify-start @click="redirLogin">
+                        <v-btn flat small color="primary">Go back to login</v-btn>
                       </v-layout>
                   </v-flex>
                   <v-flex md6>
@@ -42,7 +35,7 @@
           </div>
           <v-card-actions>
             <v-layout justify-center>
-              <v-btn :disabled="!valid" @click="login" :loading="loading" color="orange">Login</v-btn>
+              <v-btn :disabled="!valid" @click="forgetPassFunc" :loading="loading" color="orange">Set New Password</v-btn>
             </v-layout>
           </v-card-actions>
         </v-card>
@@ -54,17 +47,13 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'login',
+  name: 'setPassword',
   data () {
     return {
-      email: '',
+      token: '',
       password: '',
       loading: false,
       valid: true,
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+/.test(v) || 'E-mail must be valid'
-      ],
       rules: {
         required: value => !!value || 'Required.',
         min: v => v.length >= 8 || 'Min 8 characters'
@@ -75,41 +64,31 @@ export default {
     redirSignup () {
       this.$router.push('/signup')
     },
-    redirForgetPass () {
-      this.$router.push('/auth/ForgetPassword')
+    redirLogin () {
+      this.$router.push('/auth/login')
     },
-    login () {
+    forgetPassFunc () {
       this.loading = true
       let obj = {
-        email: this.email,
-        password: this.password
+        password: this.password,
+        token: this.token
       }
-      console.log(obj)
-      axios.post(this.$store.getters.getBaseUrl+'/login', obj)
+      axios.post(this.$store.getters.getBaseUrl+'/resetPass2', obj)
         .then((res) => {
+          console.log(res.data)
           if(res.data.success) {
-            if(res.data.token) {
-              console.log(res.data.token)
-              this.$store.commit('createSnackbar', {
-                color: 'green',
-                content: 'Login Successfull'
-              })
-              localStorage.setItem('token', res.data.token)
-              this.$router.push({path: '/app/home'})
-            } else {
-              this.$store.commit('createSnackbar', {
-                color: 'red',
-                content: 'Try Again'
-              })
-              this.loading = false
-            }
+             this.$store.commit('createSnackbar', {
+              color: 'green',
+              content: res.data.message
+            })
+            this.$router.push('/auth/login')
           } else {
             this.$store.commit('createSnackbar', {
-                color: 'red',
-                content: res.data.message
-              })
-              this.loading = false
+              color: 'red',
+              content: res.data.message
+            })
           }
+          this.loading = false
         })
         .catch(() => {
           this.$store.commit('createSnackbar', {
@@ -119,6 +98,21 @@ export default {
           this.loading = false
         })
     }
+  },
+  created () {
+    this.token = this.$route.query.id
+    let obj = {
+      token: this.token
+    }
+    axios.post(this.$store.getters.getBaseUrl+'/resetPass1', obj)
+      .then((res) => {
+        if(!res.data.success) {
+          this.$store.commit('createSnackbar', {
+            color: 'red',
+            content: res.data.message
+          })
+        }
+      })
   }
 }
 </script>

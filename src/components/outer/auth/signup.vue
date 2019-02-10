@@ -84,17 +84,17 @@ export default {
       axios.post(this.$store.getters.getBaseUrl+'/signup', obj)
         .then((res) => {
           console.log(res)
-          if(res.data.status == 'success') {
+          if(res.data.success) {
             this.$store.commit('createSnackbar', {
               color: 'green',
-              content: 'Registration Successfull'
+              content: res.data.message
             })
             this.$router.push({path: '/auth/login'})
           }
           else {
             this.$store.commit('createSnackbar', {
               color: 'red',
-              content: res.data.error
+              content: res.data.message
             })
             this.loading = false
           }

@@ -11,6 +11,9 @@ router.get('/login', (req,res) => {
 router.post('/signup',userController.create);
 router.post('/login',userController.login);
 router.post('/verify',userController.verify);
+router.post('/forgetPassword',userController.checkEmail);
+router.post('/resetPass1',userController.verifyEmailToken);
+router.post('/resetPass2',userController.resetPass);
 router.get('/tokenCheck',middleware.checkToken,userController.checkToken);
 router.get('/test',middleware.checkToken,userController.test);
 module.exports = router;

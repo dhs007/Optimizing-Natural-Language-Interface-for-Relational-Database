@@ -10,6 +10,8 @@ import Outer from './components/outer'
 import Login from './components/outer/auth/login.vue'
 import Signup from './components/outer/auth/signup.vue'
 import EmailVerify from './components/outer/auth/emailverify'
+import ForgetPassword from './components/outer/auth/forgetPassword'
+import setPassword from './components/outer/auth/setPassword'
 
 Vue.use(Router)
 
@@ -43,6 +45,8 @@ export default new Router({
       children: [
         {path: '/auth',redirect: '/auth/login'},
         {path: '/auth/login', component: Login},
+        {path: '/auth/ForgetPassword', component: ForgetPassword},
+        {path: '/auth/setPassword', component: setPassword},
         {path: '/auth/email/verify', component: EmailVerify},
         {path: '/signup', component: Signup}
       ]

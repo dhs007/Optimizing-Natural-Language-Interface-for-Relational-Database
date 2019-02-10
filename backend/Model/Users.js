@@ -8,7 +8,7 @@ const  bcrypt = require('bcryptjs');
     let result = {};
     checkEmailExits(email)
       .then((res) => {
-        if(res>0) {
+        if(res.length>0) {
           result.status = false;
           result.error = 'Email already exists';
           resolve(result);
@@ -41,12 +41,14 @@ const  bcrypt = require('bcryptjs');
 
 let checkEmailExits = (email) => {
   return new Promise((resolve,reject) => {
-    let query = 'Select email from users WHERE email ='+ mysql.escape(email);
-    db.connection.query(query,(error, rows,fields) => {
+    let query = 'Select email,status from users WHERE email ='+ mysql.escape(email);
+    db.connection.query(query,(error, rows) => {
       if (error) {
         reject(error);
       } else {
-        resolve(rows.length);
+        // console.log('Printing data')
+        // console.log(rows.length);
+        resolve(rows);
       }
     })
   })
@@ -99,7 +101,25 @@ function authenticate(email,password) {
  });
 }
 
-
+let changePassword = (email,password) => {
+  return new Promise((resolve,reject) => {
+    bcrypt.genSalt(10,(err,salt) => {
+      if(err) console.log(err);
+      bcrypt.hash(password,salt, (err,hash) => {
+        if(err) console.log(err);
+        password = hash;
+        let query = 'Update users SET password = '+ mysql.escape(password) +' WHERE email ='+ mysql.escape(email);
+        db.connection.query(query,(error, rows,fields) => {
+          if(error) {
+            resolve(false)
+          } else {
+            resolve(true)
+          }
+        })
+      })
+    })
+  })
+}
 
 
 
@@ -108,5 +128,6 @@ module.exports = {
   createUser,
   authenticate,
   checkEmailExits,
-  verifyEmail
+  verifyEmail,
+  changePassword
 };

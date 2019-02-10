@@ -22,7 +22,7 @@ let create = (req,res) => {
                }
            });
 
-           const payload = {
+          const payload = {
             name: name,
             email: email,
           };
@@ -32,7 +32,7 @@ let create = (req,res) => {
           let link="http://"+req.get('host')+"/#/auth/email/verify?id="+token;
           //let link = "http://localhost:8080/#/auth/email/verify?id="+token
            
-           const mailOptions = {
+          const mailOptions = {
             from: process.env.email, // sender address
             to: email, // list of receivers
             subject: 'Email Verification', // Subject line
@@ -46,21 +46,24 @@ let create = (req,res) => {
               console.log(info);
          });
 
-          output.status = 'success';
+          output.success = true
+          output.message = 'Registeration success verify email to login'
           res.status(200).send(output);
         } else {
-          output.status = 'fail';
-          output.error = response.error;
+          output.success = false
+          output.message = response.error;
           res.status(200).send(output);
         }
       })
       .catch((error)=> {
         console.log(error);
-        output.status = 'Server Problem';
+        output.success = false
+        output.message = 'Server Problem';
         res.status(200).send(output);
       })
   } else {
-      output.status = 'Parameters missing'
+      output.success = false
+      output.message = 'Parameters missing'
       res.status(200).send(output);
   }
 }
@@ -74,13 +77,13 @@ function login(req,res) {
       console.log(response);
       let output = {};
       if(response.length == 0) {
-        output.status = 'fail';
-        output.error = 'Wrong username or password';
+        output.success = false;
+        output.message = 'Wrong username or password';
       } else {
         let userData = response[0];
         if(userData.status == 0) {
-          output.status = 'fail';
-          output.error = 'Email verification pending';
+          output.success = false;
+          output.message = 'Email verification pending';
         } else {
 
           const payload = {
@@ -92,8 +95,9 @@ function login(req,res) {
           let token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn : 60*60*24
           });
+          output.success = true;
           output.token = token;
-          output.status = 'success';
+          output.message = "Enjoy your token"
         }
       }
       res.status(200).send(output);
@@ -101,10 +105,67 @@ function login(req,res) {
     .catch((err) => {
       console.log(err);
       let output = {};
-      output.status = 'fail';
-      output.error = 'Server Error';
+      output.success = false;
+      output.message = 'Server Error';
       res.status(200).send(output);
     })
+}
+
+let verifyEmailToken = (req,res) => {
+  var token = req.body.token;
+  let output = {}
+  if(token) {
+    jwt.verify(token, process.env.JWT_SECRET_FOR_EMAIL, (err, decoded) => {
+      if(err) {
+        output.success = false
+        output.message = 'Password Reset Link expired'
+      } else {
+        output.success = true
+        output.message = 'Valid Token'
+      }
+    })
+  } else {
+    output.success = false
+    output.message = 'Invalid Link'
+  }
+  res.status(200).json(output)
+}
+
+let resetPass = (req,res) => {
+  let token = req.body.token
+  let password = req.body.password
+  let output = {}
+  if(token) {
+    jwt.verify(token, process.env.JWT_SECRET_FOR_EMAIL, (err, decoded) => {
+      if(err) {
+        output.success = false
+        output.message = 'Password Reset Link expired'
+        res.status(200).json(output)
+      } else {
+        model.changePassword(decoded.email,password)
+          .then((response) => {
+            if(response) {
+              output.success = true
+              output.message = 'Password Reset Success'
+              res.status(200).json(output)
+            } else {
+              output.success = false
+              output.message = 'Password Reset Fail'
+              res.status(200).json(output)
+            }
+          })
+          .catch((err) => {
+            output.success = false
+            output.message = 'Password Reset Fail'
+            res.status(200).json(output)
+          })
+      }
+    })
+  } else {
+    output.success = false
+    output.message = 'Invalid Link'
+  }
+  
 }
 
 let verify = (req,res) => {
@@ -113,6 +174,7 @@ let verify = (req,res) => {
     jwt.verify(token, process.env.JWT_SECRET_FOR_EMAIL, (err, decoded) => {
       if (err) {
         console.log(err)
+        res.send('Error')
       } else {
         let email = decoded.email
         model.verifyEmail(email)
@@ -139,6 +201,54 @@ let checkToken = (req,res) => {
   res.status(200).json(output);
 }
 
+let checkEmail = (req,res) => {
+  let email = req.body.email
+  let output = {}
+  model.checkEmailExits(email)
+    .then((response) => {
+      if(response.length == 0) {
+        output.success = false;
+        output.message = 'Email does not exist';
+      } else {
+
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+                 user: process.env.email,
+                 pass: process.env.password
+             }
+         });
+        const payload = {
+          email: email,
+        };
+        let token = jwt.sign(payload, process.env.JWT_SECRET_FOR_EMAIL, {
+          expiresIn : 60*60*24
+        });
+        //let link="http://"+req.get('host')+"/#/auth/forgetPassword?id="+token;
+        let link="http://localhost:8080/#/auth/setPassword?id="+token;
+        const mailOptions = {
+          from: process.env.email, // sender address
+          to: email, // list of receivers
+          subject: 'Forget Password', // Subject line
+          html : "Hello,<br> Please Click on the link to recover your password.<br><a href="+link+">Click here to recove password</a>" 
+        };
+
+        transporter.sendMail(mailOptions, function (err, info) {
+          if(err)
+            console.log(err)
+          else
+            console.log(info);
+       });
+        output.success = true;
+        output.message = 'Email exist';
+      }
+      res.status(200).json(output)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
 let test = (req,res)=> {
   let output = {};
   output.data = req.decoded;
@@ -151,5 +261,8 @@ module.exports = {
   login,
   test,
   verify,
-  checkToken
+  checkToken,
+  checkEmail,
+  verifyEmailToken,
+  resetPass
 };
