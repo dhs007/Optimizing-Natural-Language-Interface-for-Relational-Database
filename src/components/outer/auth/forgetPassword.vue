@@ -75,11 +75,14 @@ export default {
       axios.post(this.$store.getters.getBaseUrl+'/forgetPassword', obj)
         .then((res) => {
           console.log(res.data)
-          if(res.data.success) {
-
-          } else {
+          if(!res.data.success) {
             this.$store.commit('createSnackbar', {
               color: 'red',
+              content: res.data.message
+            })
+          } else {
+            this.$store.commit('createSnackbar', {
+              color: 'green',
               content: res.data.message
             })
           }

@@ -27,7 +27,7 @@ let create = (req,res) => {
             email: email,
           };
           let token = jwt.sign(payload, process.env.JWT_SECRET_FOR_EMAIL, {
-            expiresIn : 60*60*24
+            expiresIn : 60*60*60*60*24
           });
           let link="http://"+req.get('host')+"/#/auth/email/verify?id="+token;
           //let link = "http://localhost:8080/#/auth/email/verify?id="+token
@@ -222,10 +222,10 @@ let checkEmail = (req,res) => {
           email: email,
         };
         let token = jwt.sign(payload, process.env.JWT_SECRET_FOR_EMAIL, {
-          expiresIn : 60*60*24
+          expiresIn : 60*60*60*60*24
         });
-        //let link="http://"+req.get('host')+"/#/auth/forgetPassword?id="+token;
-        let link="http://localhost:8080/#/auth/setPassword?id="+token;
+        let link="http://"+req.get('host')+"/#/auth/setPassword?id="+token;
+        //let link="http://localhost:8080/#/auth/setPassword?id="+token;
         const mailOptions = {
           from: process.env.email, // sender address
           to: email, // list of receivers
@@ -240,7 +240,7 @@ let checkEmail = (req,res) => {
             console.log(info);
        });
         output.success = true;
-        output.message = 'Email exist';
+        output.message = 'Email sent to recover password';
       }
       res.status(200).json(output)
     })
