@@ -28,8 +28,9 @@ if (environment !== 'production') {
 app.use('/',express.static(__dirname + "/dist"));
 app.use('/api/v1', routes);
 
-app.listen(`${stage.port}`, () => {
-  console.log(`Server started on port ${stage.port}`);
+let port = process.env.PORT || 3000
+app.listen(port, () => {
+  console.log(`Server started on port ${port}`);
 });
 
 module.exports = app;
