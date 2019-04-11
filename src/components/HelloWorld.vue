@@ -15,6 +15,9 @@
         <v-flex xs12 text-xs-center class="mt-4">
           {{sentences}}
         </v-flex>
+        <v-flex xs12 text-xs-center class="mt-4">
+          {{sentences}}
+        </v-flex>
       </v-layout>
     </v-container>
   </v-app>
