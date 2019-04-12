@@ -2,11 +2,15 @@
 
 ## Requirements:
 
-### Software Requirements:<br/>
+##### Software Requirements:<br/>
 Node<br/>
 Node Package Manager<br/>
 Python3<br/>
 PyTorch<br/>
+
+##### Hardware Requirements: <br/>
+Recommended RAM 16 GB RAM<br/>
+Atleast QudCore Processor<br/>
 
 
 For setting the path of npm (if not set in enviornment variable)
