@@ -13,7 +13,7 @@ Recommended RAM 16 GB RAM<br/>
 Atleast QudCore Processor<br/>
 
 
-For setting the path of npm (if not set in enviornment variable)
+##### For setting the path of npm (if not set in enviornment variable)
 ```
 set path="C:/path-to-node/"
 ```
