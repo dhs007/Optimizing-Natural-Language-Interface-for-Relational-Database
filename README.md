@@ -2,11 +2,11 @@
 
 Requirements:
 
-Software Requirements:
-Node
-Node Package Manager
-Python3
-
+Software Requirements:<br/>
+Node<br/>
+Node Package Manager<br/>
+Python3<br/>
+PyTorch<br/>
 
 
 For setting the path of npm (if not set in enviornment variable)
