@@ -1,8 +1,8 @@
 # major-project
 
-Requirements:
+## Requirements:
 
-Software Requirements:<br/>
+### Software Requirements:<br/>
 Node<br/>
 Node Package Manager<br/>
 Python3<br/>
