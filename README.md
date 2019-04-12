@@ -1,5 +1,18 @@
 # major-project
 
+Requirements:
+
+Software Requirements:
+Node
+Node Package Manager
+Python3
+
+
+
+For setting the path of npm (if not set in enviornment variable)
+```
+set path="C:/path-to-node/"
+```
 ## Project setup
 ```
 npm install
