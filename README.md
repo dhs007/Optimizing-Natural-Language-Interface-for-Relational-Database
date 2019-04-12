@@ -3,14 +3,14 @@
 ## Requirements:
 
 ##### Software Requirements:<br/>
-Node<br/>
-Node Package Manager<br/>
-Python3<br/>
-PyTorch<br/>
+Node JS [Installation Guide for Node](https://nodejs.org/en/download/)<br/>
+Node Package Manager [Installation Guide for Node Package Manager](https://www.npmjs.com/package/download)<br/>
+Python3 [Installation Guide for Python3](https://www.python.org/downloads/)<br/>
+PyTorch [Installation Guide for PyTorch](https://pytorch.org/resources)<br/>
 
 ##### Hardware Requirements: <br/>
 Recommended RAM 16 GB RAM<br/>
-Atleast QudCore Processor<br/>
+Recommeded Atleast QudCore Processor<br/>
 
 
 ##### For setting the path of npm (if not set in enviornment variable)
