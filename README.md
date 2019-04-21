@@ -10,7 +10,7 @@ PyTorch <br/>[Installation Guide for PyTorch](https://pytorch.org/resources)<br/
 
 ##### Hardware Requirements: <br/>
 Recommended RAM 16 GB RAM<br/>
-Recommeded Atleast QudCore Processor<br/>
+Recommeded Atleast QuadCore Processor<br/>
 
 
 ##### For setting the path of npm (if not set in enviornment variable)
